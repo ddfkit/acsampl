@@ -34,7 +34,7 @@ def rerooting(n,g,merge,e,apply_edge):
         dp_sub[u]=val
     ans=[e]*n;dp_p=[e]*n
     for u in order:
-        deg=len(g[u]);children=[v for v in g[u] if v!=par[u]]
+        children=[v for v in g[u] if v!=par[u]]
         left=[e]*(len(children)+1);right=[e]*(len(children)+1)
         for i,v in enumerate(children):
             left[i+1]=merge(left[i],apply_edge(dp_sub[v]))

@@ -27,23 +27,24 @@ class Rope:
     def __add__(self,o):return self.concat(o)
     def __getitem__(self,idx):
         if isinstance(idx,slice):
-            st,ed,stp=idx.indices(self.w)
+            st,ed,_=idx.indices(self.w)
             return self._sub(st,ed)
         if idx<0:idx+=self.w
         if not (0<=idx<self.w):raise IndexError
-        if self.l is None:return self.s[idx]
+        if self.l is None or self.r is None:return self.s[idx]
         return self.l[idx] if idx<self.l.w else self.r[idx-self.l.w]
     def _sub(self,st,ed):
         if st>=ed or st>=self.w or ed<=0:return Rope()
         if st<=0 and ed>=self.w:return self
-        if self.l is None:return Rope(s=self.s[st:ed])
+        if self.l is None or self.r is None:return Rope(s=self.s[st:ed])
         lw=self.l.w
         if ed<=lw:return self.l._sub(st,ed)
         if st>=lw:return self.r._sub(st-lw,ed-lw)
         return self.l._sub(st,lw).concat(self.r._sub(0,ed-lw))
     def to_str(self):
-        if self.l is None:return self.s
+        if self.l is None or self.r is None:return self.s
         return self.l.to_str()+self.r.to_str()
+    def __str__(self):return self.to_str()
 
 if __name__ == "__main__":
     r1 = Rope(s="hello_")
@@ -53,5 +54,5 @@ if __name__ == "__main__":
     assert r[0] == "h" and r[6] == "w"
     assert r.to_str() == "hello_world"
     sub = r[3:8]
-    assert sub.to_str() == "lo_wo"
-    print("rope.py: tests passed!")
+    assert isinstance(sub, Rope) and sub.to_str() == "lo_wo"
+    print("rope.py: all tests passed!")

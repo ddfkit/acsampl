@@ -12,7 +12,6 @@ AtCoder等のインタラクティブ問題 (対話型問題) をローカルで
 3. tester.run(judge) を実行
 """
 
-import sys
 from subprocess import PIPE, Popen
 
 # https://github.com/ddfkit/acsampl/blob/main/interactive.py
@@ -22,14 +21,15 @@ class InteractiveTester:
         self.cmd=[py_cmd,target_script]
     def run(self,judge):
         p=Popen(self.cmd,stdin=PIPE,stdout=PIPE,stderr=PIPE,text=True)
+        sin,sout=p.stdin,p.stdout
+        if not sin or not sout:p.terminate();return False,-1
         init_data=judge.init_input()
-        if init_data:p.stdin.write(init_data+"\n");p.stdin.flush()
+        if init_data:sin.write(init_data+"\n");sin.flush()
         while p.poll() is None:
-            line=p.stdout.readline()
+            line=sout.readline()
             if not line:break
-            line=line.strip()
-            resp,done=judge.respond(line)
-            if resp is not None:p.stdin.write(resp+"\n");p.stdin.flush()
+            resp,done=judge.respond(line.strip())
+            if resp is not None:sin.write(resp+"\n");sin.flush()
             if done:break
         p.terminate()
         return judge.verdict()
@@ -61,4 +61,4 @@ if __name__ == "__main__":
     _, done = j.respond(f"! {lo}")
     ok, queries = j.verdict()
     assert ok and queries <= 8
-    print("interactive.py: tests passed!")
+    print("interactive.py: all tests passed!")
