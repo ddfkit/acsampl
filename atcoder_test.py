@@ -30,47 +30,61 @@ import atcoder.string
 import atcoder.convolution
 
 if __name__ == "__main__":
-    # DSU
-    uf = atcoder.dsu.DSU(4)
-    uf.merge(0, 1); uf.merge(2, 3)
-    assert uf.same(0, 1) and not uf.same(0, 2)
-    assert uf.size(0) == 2 and len(uf.groups()) == 2
+    # --- DSU: ユニオンファインド 辺情報から連結成分を計算 ---
+    # see atcode/other/practice2/practice2_a.py
+    dsu = atcoder.dsu.DSU(10)
+    assert len(dsu.groups()) == 10  # グループを出力。10点が全て独立している
+    edges = [(0, 1), (0, 5), (2, 9), (5, 6), (3, 4), (4, 8), (9, 2)]
+    for e in edges:
+        dsu.merge(*e)  # 辺をつけていく
+    assert dsu.same(0, 6)   # 同一グループか
+    assert not dsu.same(0, 2)
+    assert dsu.leader(8) == dsu.leader(3)  # 代表元
+    assert dsu.size(0) == 4  # 連結成分のサイズ (0, 1, 5, 6)
 
-    # FenwickTree (1点加算・区間和 [l, r))
+    # --- FenwickTree (BIT): 1点加算・区間和 [l, r) ---
     ft = atcoder.fenwicktree.FenwickTree(5)
     for i, v in enumerate([1, 2, 3, 4, 5]): ft.add(i, v)
     assert ft.sum(1, 4) == 9  # 2 + 3 + 4
 
-    # SegTree (一点更新・区間クエリ)
-    # [3, 1, 4, 1, 5, 9]
-    st = atcoder.segtree.SegTree(min, float('inf'), [3, 1, 4, 1, 5, 9])
-    assert st.prod(1, 4) == 1
-    st.set(1, 10)  # [3, 10, 4, 1, 5, 9]
-    assert st.prod(1, 3) == 4  # min(10, 4) == 4
+    # --- セグ木: 一点更新・区間積 (モノイド) ---
+    l = list(range(16))
+    st = atcoder.segtree.SegTree(lambda a, b: a + b, 0, l)
+    # 範囲和
+    assert st.prod(5, 7) == 11  # l[5] + l[6] = 11
+    # 一点更新
+    st.set(0, 10)
+    assert st.prod(0, 3) == 13  # 10 + 1 + 2
 
-    # LazySegTree (区間更新・区間クエリ)
+    # --- 遅延セグ木: 区間更新・区間積 ---
     lst = atcoder.lazysegtree.LazySegTree(
-        min, float('inf'), lambda f, x: f + x, lambda f, g: f + g, 0, [3, 1, 4, 1, 5]
+        lambda a, b: max(a, b),  # 演算
+        -100000,                  # 単位元
+        lambda a, x: a * x,      # 一括操作。aのxへの作用。演算に関し準同型であるもののみ
+        lambda a, b: a * b,      # 一括操作の合成則
+        1,                       # 一括操作の単位元
+        list(range(16)),         # 初期値
     )
-    lst.apply(1, 4, 10)
-    assert lst.prod(0, 3) == 3
+    assert lst.prod(3, 5) == 4   # max(l[3], l[4]) == 4
+    lst.apply(5, 7, 2)           # 5,6要素を2倍する
+    assert lst.prod(5, 8) == 12  # max(l[5]*2, l[6]*2, l[7]) == 12
 
-    # SCC (強連結成分分解)
+    # --- SCC (強連結成分分解) ---
     g = atcoder.scc.SCCGraph(3)
     g.add_edge(0, 1); g.add_edge(1, 2); g.add_edge(2, 0)
     assert len(g.scc()) == 1
 
-    # MaxFlow
+    # --- 最大流 (MaxFlow) ---
     mf = atcoder.maxflow.MFGraph(4)
     mf.add_edge(0, 1, 2); mf.add_edge(1, 3, 1); mf.add_edge(0, 2, 1); mf.add_edge(2, 3, 2)
     assert mf.flow(0, 3) == 2
 
-    # TwoSAT
+    # --- TwoSAT ---
     ts = atcoder.twosat.TwoSAT(2)
     ts.add_clause(0, True, 1, True)
     assert ts.satisfiable()
 
-    # Convolution (mod 998244353)
+    # --- 畳み込み (mod 998244353) ---
     c = atcoder.convolution.convolution(998244353, [1, 2], [3, 4])
     assert c == [3, 10, 8]
-    print("All ACL tests passed!")
+    print("atcoder_test.py: all ACL tests passed!")

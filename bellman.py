@@ -28,11 +28,15 @@ def bellman_ford(n,es,s=0,inf=10**18):
     return d,False
 
 if __name__ == "__main__":
+    # 始点: [(終点, コスト),...] から辺リスト [(u, v, cost), ...] を作成
+    # 頂点数4, 辺: (0->1: 1), (0->2: 4), (1->2: -2), (2->3: 2)
     es = [(0, 1, 1), (0, 2, 4), (1, 2, -2), (2, 3, 2)]
     d, neg = bellman_ford(4, es, 0)
     assert not neg and d == [0, 1, -1, 1]
 
+    # 負閉路が存在するグラフのテスト
     es_neg = [(0, 1, 1), (1, 2, -3), (2, 0, 1)]
     _, neg = bellman_ford(3, es_neg, 0)
+    # 負閉路が存在するため neg == True
     assert neg
-    print("bellman.py: tests passed!")
+    print("bellman.py: all tests passed!")

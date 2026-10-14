@@ -28,14 +28,36 @@ def rle_decode(runs):
     return "".join(k*cnt for k,cnt in runs)
 
 if __name__ == "__main__":
+    # --- 順列イテレータ (permutations) ---
+    # 0, 1
+    # 0, 2
+    # ...
+    # 0, 9
+    # 1, 0
+    # ...
+    # 9, 8
+    p = list(itertools.permutations(range(10), 2))
+    assert len(p) == 90  # 10 * 9
+    assert p[0] == (0, 1) and p[1] == (0, 2)
+
+    # --- 組み合わせイテレータ (combinations) ---
+    # 0, 1
+    # 0, 2
+    # ...
+    # 0, 9
+    # 1, 2
+    # ...
+    # 8, 9
+    c = list(itertools.combinations(range(10), 2))
+    assert len(c) == 45  # 10 * 9 / 2
+    assert c[0] == (0, 1) and c[-1] == (8, 9)
+
+    # --- 直積 (product) ---
+    prod = list(itertools.product([0, 1], repeat=3))
+    assert len(prod) == 8  # 2^3
+
+    # --- ランレングス圧縮 (RLE) ---
     res = rle("aaabbcccca")
     assert res == [('a', 3), ('b', 2), ('c', 4), ('a', 1)]
     assert rle_decode(res) == "aaabbcccca"
-
-    p = list(itertools.permutations(range(3), 2))
-    assert len(p) == 6
-    c = list(itertools.combinations(range(4), 2))
-    assert len(c) == 6
-    prod = list(itertools.product([0, 1], repeat=3))
-    assert len(prod) == 8
-    print("iter.py: tests passed!")
+    print("iter.py: all tests passed!")

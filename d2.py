@@ -44,9 +44,26 @@ def zigzag(h,w):
 def rot90(a):return [list(x) for x in zip(*a[::-1])]
 
 if __name__ == "__main__":
+    # 範囲内判定
     assert in_grid(2, 3, 3, 4) and not in_grid(3, 3, 3, 4)
+
+    # 2次元回転イテレータ
+    # 1 2 3
+    # 8 9 4
+    # 7 6 5
     assert list(roll(2, 3)) == [(0, 0), (0, 1), (0, 2), (1, 2), (1, 1), (1, 0)]
+    assert list(roll(3, 2)) == [(0, 0), (0, 1), (1, 1), (2, 1), (2, 0), (1, 0)]
+    assert list(roll(3, 3)) == [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (1, 0), (1, 1)]
+    assert list(roll(1, 1)) == [(0, 0)]
+    assert list(roll(1, 2)) == [(0, 0), (0, 1)]
+    assert list(roll(1, 3)) == [(0, 0), (0, 1), (0, 2)]
+    assert list(roll(2, 1)) == [(0, 0), (1, 0)]
+    assert list(roll(3, 1)) == [(0, 0), (1, 0), (2, 0)]
+
+    # 2次元ジグザグジェネレータ
     assert list(zigzag(2, 2)) == [(0, 0), (0, 1), (1, 1), (1, 0)]
+
+    # 2次元配列の90度時計回り回転
     a = [[1, 2], [3, 4]]
     assert rot90(a) == [[3, 1], [4, 2]]
-    print("d2.py: tests passed!")
+    print("d2.py: all tests passed!")

@@ -37,14 +37,36 @@ def bin_search_float(ok,ng,fn,eps=1e-9,loop=100):
 
 if __name__ == "__main__":
     import bisect
-    A = [1, 2, 4, 4, 4, 6, 7]
-    assert bisect.bisect_left(A, 4) == 2
-    assert bisect.bisect_right(A, 4) == 5
-    assert bisect.bisect_right(A, 4) - bisect.bisect_left(A, 4) == 3
 
+    # Aはソートされていなければならない
+    A = [1, 2, 3, 3, 3, 5, 6]
+    #    0  1  2  3  4  5  6
+
+    # 順序を保ったまま挿入できる一番左。
+    # なので指定以上の最小インデクス
+    assert bisect.bisect_left(A, 3) == 2
+    assert bisect.bisect_left(A, 4) == 5
+
+    # 順序を保ったまま挿入できる一番右。
+    # なので指定を超える最小インデクス
+    assert bisect.bisect_right(A, 3) == 5
+    assert bisect.bisect_right(A, 4) == 5
+
+    # 出現個数: bisect_right - bisect_left
+    assert bisect.bisect_right(A, 3) - bisect.bisect_left(A, 3) == 3
+
+    # x 以下の最大要素のインデックス
+    assert bisect.bisect_right(A, 3) - 1 == 4
+
+    # x 未満の最大要素のインデックス
+    assert bisect.bisect_left(A, 3) - 1 == 1
+
+    # --- めぐる式二分探索 ---
+    # x**2 <= 50 を満たす最大の整数 x
     res = bin_search(0, 100, lambda x: x * x <= 50)
     assert res == 7
 
+    # sqrt(2) の浮動小数点探索
     sq2 = bin_search_float(1.0, 2.0, lambda x: x * x <= 2.0)
     assert abs(sq2 - 1.41421356) < 1e-6
-    print("bisect_.py: tests passed!")
+    print("bisect_.py: all tests passed!")

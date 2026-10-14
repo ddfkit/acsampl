@@ -73,11 +73,35 @@ def divisors(n):
     return low+high[::-1]
 
 if __name__ == "__main__":
+    # --- 素数判定 ---
     assert is_prime(2) and is_prime(1000000007) and not is_prime(1000000005)
-    assert factorize(60) == Counter({2: 2, 3: 1, 5: 1})
+    # 素数テストサンプル
+    prime_samples = [
+        13267,
+        19403,
+        28517,
+        44771,
+        100003,
+        1451831,
+        11138711
+    ]
+    for p in prime_samples:
+        assert is_prime(p)
+
+    # --- エラトステネスの篩 (primes) ---
     assert sieve(10) == [2, 3, 5, 7]
-    assert divisors(12) == [1, 2, 3, 4, 6, 12]
+
+    # --- 約数列挙 (factors) ---
+    assert set(divisors(1)) == {1}
+    assert set(divisors(2)) == {1, 2}
+    assert set(divisors(3)) == {1, 3}
+    assert set(divisors(4)) == {1, 2, 4}
+    assert set(divisors(5)) == {1, 5}
+    assert set(divisors(6)) == {1, 2, 3, 6}
+
+    # --- 素因数分解 ---
+    assert factorize(60) == Counter({2: 2, 3: 1, 5: 1})
     big = 10**14 + 7
     if is_prime(big):
         assert factorize(big) == Counter({big: 1})
-    print("prime.py: tests passed!")
+    print("prime.py: all tests passed!")

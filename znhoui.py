@@ -35,7 +35,6 @@ def rerooting(n,g,merge,e,apply_edge):
     ans=[e]*n;dp_p=[e]*n
     for u in order:
         deg=len(g[u]);children=[v for v in g[u] if v!=par[u]]
-        # 左右からの累積
         left=[e]*(len(children)+1);right=[e]*(len(children)+1)
         for i,v in enumerate(children):
             left[i+1]=merge(left[i],apply_edge(dp_sub[v]))
@@ -49,10 +48,29 @@ def rerooting(n,g,merge,e,apply_edge):
     return ans
 
 if __name__ == "__main__":
-    # 直径3の木: 0 - 1 - 2 - 3
+    # ========= サンプル木 =========
+    # 0 - 1 - 2 - 3
+    # 0. 根付き木にして、親 par と BFS 順 order と children を作る
+    # 1. bottom-up: 部分木ごとの集約値 dp_sub をボトムアップに計算
+    # 2. prefix / suffix: 左右からの累積値を作成し、O(1) で「ある子以外のマージ値」を取得可能にする
+    # 3. top-down: 親側からの伝播値 dp_p をトップダウンに計算
+    # 4. 各頂点 v に対し、全方向からの寄与をマージして「vからもっとも遠い頂点までの距離 (木の高さ)」を求める
+    N = 4
     g = [[1], [0, 2], [1, 3], [2]]
-    # 各頂点を根としたときの木の高さ (最遠頂点までの距離)
-    # merge: max, e: 0, apply_edge: +1
-    heights = rerooting(4, g, max, 0, lambda x: x + 1)
+    heights = rerooting(N, g, max, 0, lambda x: x + 1)
     assert heights == [3, 2, 2, 3]
-    print("znhoui.py: tests passed!")
+
+    # より分岐のある木でのテスト
+    #         0
+    #      /  |  \
+    #     1   2   3
+    #    / \
+    #   4   5
+    N2 = 6
+    g2 = [[1, 2, 3], [0, 4, 5], [0], [0], [1], [1]]
+    h2 = rerooting(N2, g2, max, 0, lambda x: x + 1)
+    # 0からの最遠: 4 or 5 で距離2
+    assert h2[0] == 2
+    # 4からの最遠: 2 or 3 で距離3 (4->1->0->2)
+    assert h2[4] == 3
+    print("znhoui.py: all tests passed!")
